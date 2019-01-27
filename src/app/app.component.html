@@ -1,11 +1,13 @@
-<h1>Dynamic API</h1>
-<button (click)="auth()">auth()</button>
-<button (click)="checkAuth()">checkAuth()</button>
-<button (click)="addFormAttr()">addFormAttr()</button>
-<button (click)="delFormAttr()">delFormAttr()</button>
-<button (click)="generateForm()">generateForm()</button>
+<h1>LIMP Sandbox</h1>
+<ng-container *ngIf="guardOn">
+	<button (click)="auth()">auth()</button>
+	<button (click)="checkAuth()">checkAuth()</button>
+</ng-container>
+<button (click)="call()">call()</button>
+<button (click)="call('blog/read')">call('blog/read')</button>
+<button (click)="call('blog_cat/read')">call('blog_cat/read')</button>
+<button (click)="call('staff/read')">call('staff/read')</button>
 <ng-container *ngIf="guardOn == false">
-	<button (click)="call()">call()</button>
 	<button (click)="signout()">signout()</button>
 </ng-container>
 
@@ -16,15 +18,23 @@
 <hr>
 <h2>Form</h2>
 <form #formView [formGroup]="form" (submit)="submitForm()" ngNativeValidate>
+	<button type="button" (click)="populateAttrs('blog')">populateAttrs('blog')</button>
+	<button type="button" (click)="populateAttrs('blog_cat')">populateAttrs('blog_cat')</button>
+	<button type="button" (click)="populateAttrs('staff')">populateAttrs('staff')</button>
+	<hr>
+	<button type="button" (click)="addFormAttr()">addFormAttr()</button>
+	<button type="button" (click)="delFormAttr()">delFormAttr()</button>
+	<button type="button" (click)="generateForm()">generateForm()</button>
+	<hr>
 	<div *ngFor="let attr of attrs" class="form-group row">
 		<label class="col-sm-2 col-form-label">{{attr[0]}}</label>
-		<div *ngIf="formReady && attr[1] == 'text'" class="col-sm-10">
+		<div *ngIf="formReady && attr[1] == 'str'" class="col-sm-10">
 			<input type="text" [formControlName]="attr[0]" class="form-control" required>
 		</div>
 
-		<div *ngIf="formReady && attr[1] == 'longtext'" class="col-sm-10">
+		<!-- <div *ngIf="formReady && attr[1] == 'longtext'" class="col-sm-10">
 			<textarea type="text" [formControlName]="attr[0]" class="form-control" required>{{form.get(attr[0]).value}}</textarea>
-		</div>
+		</div> -->
 
 		<div *ngIf="formReady && attr[1] == 'password'" class="col-sm-10">
 			<input type="password" [formControlName]="attr[0]" class="form-control" required>
@@ -38,15 +48,19 @@
 		<div *ngIf="formReady && attr[1] == 'file'" class="col-sm-10">
 			<input [id]="attr[0]" type="file" [formControlName]="attr[0]" class="form-control" required>
 		</div>
+
+		<div *ngIf="formReady && attr[1] == 'access'" class="col-sm-10">
+			<span>{{'{'}}anon:true, users:[], groups:[]{{'}'}}</span>
+		</div>
+		<div *ngIf="formReady && attr[1] == 'status'" class="col-sm-10">
+			<span>published</span>
+		</div>
 	</div>
 
-	<button *ngIf="guardOn == false" type="submit">submitForm()</button>
+	<button type="submit">submitForm()</button>
 </form>
 <hr>
 <h2>Output</h2>
 <pre style="white-space: pre-line;">
 	{{output}}
 </pre>
-
-<hr>
-<button (click)="sendMsg()">Send Message</button>
