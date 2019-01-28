@@ -180,12 +180,9 @@ export class ApiService {
 		let doc: any = { password: password };
 		doc[authVar] = authVal;
 		var oHeader = { alg: 'HS256', typ: 'JWT' };
-		var oPayload: any = {};
-		var tNow = Math.round((new Date() as any) / 1000);
-		var tEnd = Math.round((new Date() as any) / 1000) + 86400;
 		var sHeader = JSON.stringify(oHeader);
 		var sPayload = JSON.stringify(doc);
-		var sJWT = JWS.sign('HS256', sHeader, sPayload, password);
+		var sJWT = JWS.sign('HS256', sHeader, sPayload, {utf8: password});
 		doc['hash'] = sJWT.split('.')[1];
 		delete doc[password];
 		let call = new Observable(
@@ -218,10 +215,15 @@ export class ApiService {
 	}
 
 	reauth(sid: string = this.cache.get('sid'), token: string = this.cache.get('token')): Observable<any> {
+		let doc: any = { token: token };
+		var oHeader = { alg: 'HS256', typ: 'JWT' };
+		var sHeader = JSON.stringify(oHeader);
+		var sPayload = JSON.stringify(doc);
+		var sJWT = JWS.sign('HS256', sHeader, sPayload, {utf8: token});
 		return this.call('session/reauth', {
 			sid: 'f00000000000000000000012',
 			token: '__ANON',
-			query: { _id: { val: sid || 'f00000000000000000000012' } }
+			query: { _id: { val: sid || 'f00000000000000000000012' }, hash: { val: sJWT.split('.')[1] } }
 		});
 	}
 
