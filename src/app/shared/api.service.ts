@@ -9,7 +9,7 @@ import * as rs from 'jsrsasign';
 
 const JWS = rs.jws.JWS;
 
-const API_URL = environment.api;
+const API_URL = environment.ws_api;
 
 export interface callArgs {
 	call_id?: string;
@@ -78,7 +78,7 @@ export class ApiService {
 
 	call(endpoint: string, callArgs: callArgs, binary: boolean = false): Observable<any> {
 		callArgs.sid = (this.authed) ? callArgs.sid || this.cache.get('sid') || 'f00000000000000000000012' : 'f00000000000000000000012';
-		callArgs.token = (this.authed) ? callArgs.token || this.cache.get('token') || '__ANON' : '__ANON';
+		callArgs.token = (this.authed) ? callArgs.token || this.cache.get('token') || environment.anon_token : environment.anon_token;
 		callArgs.query = callArgs.query || {};
 		callArgs.doc = callArgs.doc || {};
 
@@ -157,37 +157,36 @@ export class ApiService {
 			if (filesProcess.length) {
 				this.pushCall(callArgs, filesProcess);
 			} else {
-				if (callArgs.token == '__ANON') {
-					this.subject.next(callArgs);
-				} else {
+				// if (callArgs.token == environment.anon_token) {
+				// 	this.subject.next(callArgs);
+				// } else {
 					// Header
-					var oHeader = { alg: 'HS256', typ: 'JWT' };
+					let oHeader = { alg: 'HS256', typ: 'JWT' };
 					// Payload
-					var tNow = Math.round((new Date() as any) / 1000);
-					var tEnd = Math.round((new Date() as any) / 1000) + 86400;
-					var sHeader = JSON.stringify(oHeader);
-					var sPayload = JSON.stringify({...callArgs, iat: tNow, exp: tEnd});
+					let tNow = Math.round((new Date() as any) / 1000);
+					let tEnd = Math.round((new Date() as any) / 1000) + 86400;
+					let sHeader = JSON.stringify(oHeader);
+					let sPayload = JSON.stringify({ ...callArgs, iat: tNow, exp: tEnd });
 					// console.log(sHeader, sPayload, callArgs.token);
-					var sJWT = JWS.sign('HS256', sHeader, sPayload, {utf8: callArgs.token});
+					let sJWT = JWS.sign('HS256', sHeader, sPayload, { utf8: callArgs.token });
 					// console.log('sending request as JWT token:', callArgs, callArgs.token);
-					this.subject.next({token: sJWT});
-				}
+					this.subject.next({ token: sJWT });
+				// }
 			}
 		}, 100);
 	}
 
+	generateAuthHash(authVar: 'username' | 'email' | 'phone', authVal: string, password: string): string {
+		let oHeader = { alg: 'HS256', typ: 'JWT' };
+		let sHeader = JSON.stringify(oHeader);
+		let sPayload = JSON.stringify({hash:[authVar, authVal, password]});
+		let sJWT = JWS.sign('HS256', sHeader, sPayload, { utf8: password });
+		return sJWT.split('.')[1];
+	}
+
 	auth(authVar: 'username' | 'email' | 'phone', authVal: string, password: string): Observable<any> {
-		let doc: any = { password: password };
+		let doc: any = { hash: this.generateAuthHash(authVar, authVal, password) };
 		doc[authVar] = authVal;
-		var oHeader = { alg: 'HS256', typ: 'JWT' };
-		var oPayload: any = {};
-		var tNow = Math.round((new Date() as any) / 1000);
-		var tEnd = Math.round((new Date() as any) / 1000) + 86400;
-		var sHeader = JSON.stringify(oHeader);
-		var sPayload = JSON.stringify(doc);
-		var sJWT = JWS.sign('HS256', sHeader, sPayload, password);
-		doc['hash'] = sJWT.split('.')[1];
-		delete doc[password];
 		let call = new Observable(
 			(observer) => {
 				this.authed = false;
@@ -218,10 +217,14 @@ export class ApiService {
 	}
 
 	reauth(sid: string = this.cache.get('sid'), token: string = this.cache.get('token')): Observable<any> {
+		let oHeader = { alg: 'HS256', typ: 'JWT' };
+		let sHeader = JSON.stringify(oHeader);
+		let sPayload = JSON.stringify({ token: token });
+		let sJWT = JWS.sign('HS256', sHeader, sPayload, { utf8: token });
 		return this.call('session/reauth', {
 			sid: 'f00000000000000000000012',
-			token: '__ANON',
-			query: { _id: { val: sid || 'f00000000000000000000012' } }
+			token: environment.anon_token,
+			query: { _id: { val: sid || 'f00000000000000000000012' }, hash: { val: sJWT.split('.')[1] } }
 		});
 	}
 
@@ -242,7 +245,7 @@ export class ApiService {
 				}, (err) => {
 					observer.error(err);
 				});
-				
+
 			}
 		);
 		return call;
@@ -268,7 +271,7 @@ export class ApiService {
 						this.authed = false;
 						this.session = undefined;
 						this.authed$.next(this.session);
-						
+
 						observer.error({
 							status: 403,
 							message: 'Wrong credentials cached.'
