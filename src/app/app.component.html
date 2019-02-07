@@ -17,19 +17,29 @@
 </ol>
 <hr>
 <h2>Form</h2>
+<button type="button" (click)="populateAttrs('blog')">populateAttrs('blog')</button>
+<button type="button" (click)="populateAttrs('blog_cat')">populateAttrs('blog_cat')</button>
+<button type="button" (click)="populateAttrs('staff')">populateAttrs('staff')</button>
+<hr>
+<select [(ngModel)]="attrModel">
+	<option *ngFor="let option of ['locale', 'str', 'int', 'access', 'file', 'geo']" [value]="option">{{option}}</option>
+</select>
+<button type="button" (click)="addFormAttr()">addFormAttr()</button>
+<!-- <button type="button" (click)="delFormAttr()">delFormAttr()</button> -->
+<button type="button" (click)="generateForm()">generateForm()</button>
+<hr>
 <form #formView [formGroup]="form" (submit)="submitForm()" ngNativeValidate>
-	<button type="button" (click)="populateAttrs('blog')">populateAttrs('blog')</button>
-	<button type="button" (click)="populateAttrs('blog_cat')">populateAttrs('blog_cat')</button>
-	<button type="button" (click)="populateAttrs('staff')">populateAttrs('staff')</button>
-	<hr>
-	<button type="button" (click)="addFormAttr()">addFormAttr()</button>
-	<button type="button" (click)="delFormAttr()">delFormAttr()</button>
-	<button type="button" (click)="generateForm()">generateForm()</button>
-	<hr>
-	<div *ngFor="let attr of attrs" class="form-group row">
+	<div *ngFor="let attr of attrs; let i = index" class="form-group row">
 		<label class="col-sm-2 col-form-label">{{attr[0]}}</label>
+		{{i}}
+		<button type="button" (click)="delFormAttr(i)">delFormAttr(i)</button>
+
 		<div *ngIf="formReady && attr[1] == 'str'" class="col-sm-10">
 			<input type="text" [formControlName]="attr[0]" class="form-control" required>
+		</div>
+
+		<div *ngIf="formReady && attr[1] == 'int'" class="col-sm-10">
+			<input type="number" [formControlName]="attr[0]" class="form-control" required>
 		</div>
 
 		<!-- <div *ngIf="formReady && attr[1] == 'longtext'" class="col-sm-10">
@@ -43,6 +53,11 @@
 		<div *ngIf="formReady && attr[1] == 'locale'" class="col-sm-10">
 			<input type="text" formControlName="{{attr[0]}}.ar_AE" class="form-control" placeholder="ar_AE" required>
 			<input type="text" formControlName="{{attr[0]}}.en_AE" class="form-control" placeholder="en_AE" required>
+		</div>
+
+		<div *ngIf="formReady && attr[1] == 'geo'" class="col-sm-10">
+			<input type="number" formControlName="{{attr[0]}}.lat" class="form-control" placeholder="lat" required>
+			<input type="number" formControlName="{{attr[0]}}.lng" class="form-control" placeholder="lng" required>
 		</div>
 
 		<div *ngIf="formReady && attr[1] == 'file'" class="col-sm-10">

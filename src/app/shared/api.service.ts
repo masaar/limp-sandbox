@@ -3,13 +3,10 @@ import { Observable, Subject } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
 
 import { CacheService } from './cache.service';
-import { environment } from "../../environments/environment";
 
 import * as rs from 'jsrsasign';
 
 const JWS = rs.jws.JWS;
-
-const API_URL = environment.ws_api;
 
 export interface callArgs {
 	call_id?: string;
@@ -45,6 +42,9 @@ export interface Doc {
 })
 export class ApiService {
 	subject!: Subject<any>;
+	ws_api!: string;
+	http_api!: string;
+	anon_token!: string;
 
 	session!: any;
 
@@ -53,8 +53,11 @@ export class ApiService {
 
 	constructor(private cache: CacheService) { }
 
-	init(): Observable<any> {
-		this.subject = webSocket(API_URL);
+	init(ws_api: string, http_api: string, anon_token: string): Observable<any> {
+		this.ws_api = ws_api;
+		this.http_api = http_api;
+		this.anon_token = anon_token;
+		this.subject = webSocket(this.ws_api);
 		let init = new Observable(
 			(observer) => {
 				this.subject.subscribe(
@@ -63,6 +66,13 @@ export class ApiService {
 					},
 					(err: Res<Doc>) => {
 						observer.error(err);
+
+						this.cache.remove('token');
+						this.cache.remove('sid');
+
+						this.authed = false;
+						this.session = undefined;
+						this.authed$.next(this.session);
 					},
 					() => {
 						this.reconnect();
@@ -78,7 +88,7 @@ export class ApiService {
 
 	call(endpoint: string, callArgs: callArgs, binary: boolean = false): Observable<any> {
 		callArgs.sid = (this.authed) ? callArgs.sid || this.cache.get('sid') || 'f00000000000000000000012' : 'f00000000000000000000012';
-		callArgs.token = (this.authed) ? callArgs.token || this.cache.get('token') || environment.anon_token : environment.anon_token;
+		callArgs.token = (this.authed) ? callArgs.token || this.cache.get('token') || this.anon_token : this.anon_token;
 		callArgs.query = callArgs.query || {};
 		callArgs.doc = callArgs.doc || {};
 
@@ -157,7 +167,7 @@ export class ApiService {
 			if (filesProcess.length) {
 				this.pushCall(callArgs, filesProcess);
 			} else {
-				// if (callArgs.token == environment.anon_token) {
+				// if (callArgs.token == this.anon_token) {
 				// 	this.subject.next(callArgs);
 				// } else {
 					// Header
@@ -169,7 +179,7 @@ export class ApiService {
 					let sPayload = JSON.stringify({ ...callArgs, iat: tNow, exp: tEnd });
 					// console.log(sHeader, sPayload, callArgs.token);
 					let sJWT = JWS.sign('HS256', sHeader, sPayload, { utf8: callArgs.token });
-					// console.log('sending request as JWT token:', callArgs, callArgs.token);
+					console.log('sending request as JWT token:', callArgs, callArgs.token);
 					this.subject.next({ token: sJWT });
 				// }
 			}
@@ -223,7 +233,7 @@ export class ApiService {
 		let sJWT = JWS.sign('HS256', sHeader, sPayload, { utf8: token });
 		return this.call('session/reauth', {
 			sid: 'f00000000000000000000012',
-			token: environment.anon_token,
+			token: this.anon_token,
 			query: { _id: { val: sid || 'f00000000000000000000012' }, hash: { val: sJWT.split('.')[1] } }
 		});
 	}

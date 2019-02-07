@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ApiService } from './shared/api.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
 	selector: 'app-root',
@@ -22,6 +23,7 @@ export class AppComponent implements OnInit {
 	form: FormGroup = new FormGroup({});
 	formReady: boolean = false;
 	@ViewChild('formView') formView: any;
+	attrModel!: 'locale' | 'str' | 'int' | 'access' | 'file' | 'geo';
 	attrs: Array<[string, string]> = [];
 	attrs_templates: { [key: string]: Array<[string, string]> } = {
 		blog: [
@@ -53,7 +55,7 @@ export class AppComponent implements OnInit {
 		// }, (err) => {
 		// 	console.log('ws err', err);
 		// });
-		this.api.init().subscribe((res) => {
+		this.api.init(environment.ws_api, environment.http_api, environment.anon_token).subscribe((res) => {
 			this.output += JSON.stringify(res) + '\n';
 		}, (err) => {
 			this.output += JSON.stringify(err) + '\n';
@@ -109,13 +111,15 @@ export class AppComponent implements OnInit {
 	addFormAttr(): void {
 		let attrName = prompt('attrName?');
 		if (!attrName) return;
-		let attrType = prompt('attrType?');
-		if (!attrType) return;
-		this.attrs.push([attrName, attrType]);
+		// let attrType = prompt('attrType?');
+		// if (!attrType) return;
+		this.attrs.push([attrName, this.attrModel]);
 	}
-	delFormAttr(): void {
-		let attrIndex: any = prompt('attrIndex?')
-		if (!attrIndex) return;
+	delFormAttr(attrIndex?: number): void {
+		if (attrIndex == undefined) {
+			attrIndex = parseInt(prompt('attrIndex?'))
+			if (!attrIndex) return;
+		}
 		// attrIndex = parseInt(attrIndex) - 1;
 		this.attrs.splice(attrIndex, 1);
 	}
@@ -124,9 +128,14 @@ export class AppComponent implements OnInit {
 		for (let attr of this.attrs) {
 			if (attr[1] == 'str') {
 				form[attr[0]] = ['', Validators.required];
+			} else if (attr[1] == 'int') {
+					form[attr[0]] = [0, Validators.required];
 			} else if (attr[1] == 'locale') {
 				form[`${attr[0]}.ar_AE`] = ['', Validators.required];
 				form[`${attr[0]}.en_AE`] = ['', Validators.required];
+			} else if (attr[1] == 'geo') {
+				form[`${attr[0]}.lat`] = ['', Validators.required];
+				form[`${attr[0]}.lng`] = ['', Validators.required];
 			} else if (attr[1] == 'file') {
 				form[attr[0]] = [undefined, Validators.required];
 			}
@@ -141,11 +150,18 @@ export class AppComponent implements OnInit {
 		for (let attr of this.attrs) {
 			if (attr[1] == 'str') {
 				doc[attr[0]] = this.form.value[attr[0]];
+			} else if (attr[1] == 'int') {
+				doc[attr[0]] = this.form.value[attr[0]];
 			} else if (attr[1] == 'locale') {
 				doc[attr[0]] = {
 					ar_AE: this.form.value[`${attr[0]}.ar_AE`],
 					en_AE: this.form.value[`${attr[0]}.en_AE`]
 				};
+			} else if (attr[1] == 'geo') {
+				doc[attr[0]] = {
+					type: "Point",
+					coordinates: [ this.form.value[`${attr[0]}.lat`] , this.form.value[`${attr[0]}.lng`] ]
+				}
 			} else if (attr[1] == 'list') {
 				doc[attr[0]] = [];
 			} else if (attr[1] == 'file') {
