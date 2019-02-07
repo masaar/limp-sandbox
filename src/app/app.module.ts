@@ -2,8 +2,9 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { NgLimpModule } from 'ng-limp'
+
 import { AppComponent } from './app.component';
-import { CookieModule } from 'ngx-cookie';
 import { HttpModule } from '@angular/http';
 
 @NgModule({
@@ -15,7 +16,7 @@ import { HttpModule } from '@angular/http';
 	BrowserModule,
 	FormsModule,
 	ReactiveFormsModule,
-	CookieModule.forRoot()
+	NgLimpModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { ApiService } from './shared/api.service';
+import { ApiService } from 'ng-limp';
 import { environment } from 'src/environments/environment';
 
 @Component({
