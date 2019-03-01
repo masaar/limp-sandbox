@@ -55,7 +55,8 @@ export class AppComponent implements OnInit {
 		// }, (err) => {
 		// 	console.log('ws err', err);
 		// });
-		this.api.init(environment.ws_api, environment.http_api, environment.anon_token).subscribe((res) => {
+		this.api.debug = true;
+		this.api.init(environment.ws_api, environment.anon_token).subscribe((res) => {
 			this.output += JSON.stringify(res) + '\n';
 		}, (err) => {
 			this.output += JSON.stringify(err) + '\n';
