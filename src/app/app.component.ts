@@ -147,6 +147,9 @@ export class AppComponent implements OnInit {
 	submitForm(): void {
 		let endpoint = prompt('endpoint?');
 		if (!endpoint) return;
+		let query: any = prompt('query?', '{}');
+		if (!query) query = {};
+		else query = JSON.parse(query);
 		let doc = {};
 		for (let attr of this.attrs) {
 			if (attr[1] == 'str') {
@@ -179,6 +182,7 @@ export class AppComponent implements OnInit {
 		}
 		this.logCall(`api.call(${endpoint}, {doc:${JSON.stringify(doc)}})`);
 		this.api.call(endpoint, {
+			query: query,
 			doc: doc
 		}).subscribe((res) => {
 			// this.output += JSON.stringify(res) + '\n';
