@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { ApiService } from 'ng-limp';
+import { ApiService, Res, Doc } from 'ng-limp';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -10,6 +10,8 @@ import { environment } from 'src/environments/environment';
 	styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+
+	environment: any = environment;
 
 	authVars: any = {
 		var: 'email',
@@ -45,17 +47,23 @@ export class AppComponent implements OnInit {
 		]
 	};
 
+	callArgs: any = {
+		sid: 'f00000000000000000000012',
+		token: environment.anon_token,
+		endpoint: '',
+		query: {},
+		doc: {}
+	};
+
 	output: string = '';
 
 	constructor(private api: ApiService, private formBuilder: FormBuilder) { }
 
 	ngOnInit(): void {
-		// this.api.requests.subscribe((msg) => {			
-		// 	console.log("Response from websocket: " + JSON.stringify(msg));
-		// }, (err) => {
-		// 	console.log('ws err', err);
-		// });
 		this.api.debug = true;
+	}
+
+	init(): void {
 		this.api.init(environment.ws_api, environment.anon_token).subscribe((res) => {
 			this.output += JSON.stringify(res) + '\n';
 		}, (err) => {
@@ -78,20 +86,42 @@ export class AppComponent implements OnInit {
 	}
 
 	auth(): void {
-		this.authVars.var = prompt('authVar?', this.authVars.var);
-		if (!this.authVars.var) return;
-		this.authVars.val = prompt('authVal?', this.authVars.val);
-		if (!this.authVars.val) return;
-		this.authVars.password = prompt('password?', this.authVars.password);
-		if (!this.authVars.password) return;
-		
 		this.logCall(`api.auth(${this.authVars.var}, ${this.authVars.val}, ${this.authVars.password})`);
-		this.api.auth(this.authVars.var, this.authVars.val, this.authVars.password).subscribe((res) => {
-			
+		this.api.auth(this.authVars.var, this.authVars.val, this.authVars.password).subscribe((res: Res<Doc>) => {
 			// this.authVars.auth = res.args.docs[0]
+			this.callArgs.sid = res.args.docs[0]._id;
+			this.callArgs.token = res.args.docs[0].token;
 		}, (err) => {
 			
 		})
+	}
+
+	addQueryAttr(): void {
+		let attr = prompt('attr?');
+		if (!attr) return;
+		this.callArgs.query[attr] = { val: '', val2: '', oper: '', type: 'str' }
+	}
+	delQueryAttr(attr: string): void {
+		delete this.callArgs.query[attr];
+	}
+
+	addDocAttr(): void {
+		let attr = prompt('attr?');
+		if (!attr) return;
+		this.callArgs.doc[attr] = { val: '', type: 'str' }
+	}
+	updateDocAttr(attr: string, type: string): void {
+		if (type == 'locale') {
+			this.callArgs.doc[attr].val = {
+				ar_AE: '',
+				en_AE: ''
+			};
+		} else {
+			this.callArgs.doc[attr].val = '';
+		}
+	}
+	delDocAttr(attr: string): void {
+		delete this.callArgs.doc[attr];
 	}
 
 	checkAuth(): void {
@@ -114,6 +144,7 @@ export class AppComponent implements OnInit {
 		if (!attrName) return;
 		// let attrType = prompt('attrType?');
 		// if (!attrType) return;
+		this.form = null;
 		this.attrs.push([attrName, this.attrModel]);
 	}
 	delFormAttr(attrIndex?: number): void {
@@ -191,20 +222,33 @@ export class AppComponent implements OnInit {
 		});
 	}
 
-	call(endpoint?: string): void {
-		if (!endpoint) {
-			endpoint = prompt('endpoint?');
-			if (!endpoint) return;
+	call(): void {
+		let query: any = JSON.parse(JSON.stringify(this.callArgs.query));
+		let doc: any = JSON.parse(JSON.stringify(this.callArgs.doc));
+		for (let attr of Object.keys(query)) {
+			if (!query[attr].val) {
+				alert(`empty val for query attr: ${attr}`);
+			}
+			if (query[attr].oper == '$bet' && !query[attr].val2) {
+				alert(`empty val2 for query attr: ${attr}`);
+			}
+			if (query[attr].oper == '$eq') {
+				delete query[attr].oper;
+			}
+			delete query[attr].type;
 		}
-		let query: any = prompt('query?', '{}');
-		if (!query) return;
-		let doc: any = prompt('doc?', '{}');
-		if (!doc) return;
-
-		this.logCall(`api.call(${endpoint}, {query:${query}, doc:${doc}})`);
-		this.api.call(endpoint, {
-			query: JSON.parse(query),
-			doc: JSON.parse(doc)
+		for (let attr of Object.keys(doc)) {
+			if (!doc[attr].val) {
+				alert(`empty val for doc attr: ${attr}`);
+			}
+			doc[attr] = doc[attr].val;
+		}
+		this.logCall(`api.call(${this.callArgs.endpoint}, {query:${JSON.stringify(query)}, doc:${JSON.stringify(doc)}})`);
+		this.api.call(this.callArgs.endpoint, {
+			sid: this.callArgs.sid,
+			token: this.callArgs.token,
+			query: query,
+			doc: doc
 		}).subscribe((res) => {
 			// this.output += JSON.stringify(res) + '\n';
 		}, (err) => {

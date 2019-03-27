@@ -1,15 +1,18 @@
 import { NgModule } from '@angular/core';
+import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { NgLimpModule } from 'ng-limp'
 
 import { AppComponent } from './app.component';
-import { HttpModule } from '@angular/http';
+import { KeysPipe, ValuesPipe } from './object.pipe';
 
 @NgModule({
   declarations: [
-    AppComponent
+	AppComponent,
+	KeysPipe,
+	ValuesPipe
   ],
   imports: [
 	HttpModule,
