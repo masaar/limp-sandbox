@@ -1,8 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { of, throwError } from 'rxjs';
+import { retry, catchError } from 'rxjs/operators';
+
 import { ApiService, Res, Doc } from 'ng-limp';
+
 import { environment } from 'src/environments/environment';
+
 
 @Component({
 	selector: 'app-root',
@@ -19,6 +24,9 @@ export class AppComponent implements OnInit {
 		password: '__ADMIN',
 		auth: null
 	};
+
+	showInit: boolean = true;
+	showAuth: boolean = true;
 
 	guardOn: boolean = true;
 
@@ -64,13 +72,28 @@ export class AppComponent implements OnInit {
 	}
 
 	init(): void {
-		this.api.init(environment.ws_api, environment.anon_token).subscribe((res) => {
+		this.api.init(environment.ws_api, environment.anon_token)
+		.pipe(
+			catchError((err) => {
+				if (err instanceof CloseEvent) {
+					this.output += JSON.stringify('Connection Closed.') + '\n';
+				} else {
+					this.output += JSON.stringify(err) + '\n';
+				}
+				return throwError(err);
+			}),
+			retry(10)
+		)
+		.subscribe((res: Res<Doc>) => {
+			if (res.args.code == 'CORE_CONN_OK') {
+				this.showInit = false;
+			}
 			this.output += JSON.stringify(res) + '\n';
 		}, (err) => {
-			this.output += JSON.stringify(err) + '\n';
 			if (err instanceof CloseEvent) {
-				console.log('connection closed');
-				// this.ngOnInit();
+				this.output += JSON.stringify('Connection Closed.') + '\n';
+			} else {
+				this.output += JSON.stringify(err) + '\n';
 			}
 		}, () => {
 			console.log('complete');
@@ -88,6 +111,7 @@ export class AppComponent implements OnInit {
 	auth(): void {
 		this.logCall(`api.auth(${this.authVars.var}, ${this.authVars.val}, ${this.authVars.password})`);
 		this.api.auth(this.authVars.var, this.authVars.val, this.authVars.password).subscribe((res: Res<Doc>) => {
+			this.showAuth = false;
 			// this.authVars.auth = res.args.docs[0]
 			this.callArgs.sid = res.args.docs[0]._id;
 			this.callArgs.token = res.args.docs[0].token;
@@ -126,7 +150,12 @@ export class AppComponent implements OnInit {
 
 	checkAuth(): void {
 		this.logCall('api.checkAuth()');
-		this.api.checkAuth().subscribe();
+		this.api.checkAuth()
+		.subscribe((res: Res<Doc>) => {
+			this.showAuth = false;
+		}, (err: Res<Doc>) => {
+			this.output += JSON.stringify(err) + '\n';
+		});
 	}
 
 	signout(): void {
@@ -239,7 +268,14 @@ export class AppComponent implements OnInit {
 		}
 		for (let attr of Object.keys(doc)) {
 			if (!doc[attr].val) {
-				alert(`empty val for doc attr: ${attr}`);
+				if (doc[attr].type == 'file') {
+					doc[attr].val = (window.document.querySelector(`#file-${attr}`) as any).files;
+				} else {
+					alert(`empty val for doc attr: ${attr}`);
+				}
+			}
+			if (doc[attr].type == 'json') {
+				doc[attr].val = JSON.parse(doc[attr].val);
 			}
 			doc[attr] = doc[attr].val;
 		}

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "qart": {
+    "limp-sandbox": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/qart",
+            "outputPath": "dist/limp-sandbox",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -50,18 +50,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "qart:build"
+            "browserTarget": "limp-sandbox:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "qart:build:production"
+              "browserTarget": "limp-sandbox:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "qart:build"
+            "browserTarget": "limp-sandbox:build"
           }
         },
         "test": {
@@ -95,7 +95,7 @@
         }
       }
     },
-    "qart-e2e": {
+    "limp-sandbox-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -103,11 +103,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "qart:serve"
+            "devServerTarget": "limp-sandbox:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "qart:serve:production"
+              "devServerTarget": "limp-sandbox:serve:production"
             }
           }
         },
@@ -123,5 +123,5 @@
       }
     }
   },
-  "defaultProject": "qart"
+  "defaultProject": "limp-sandbox"
 }

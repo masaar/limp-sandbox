@@ -1,86 +1,104 @@
 <h1>LIMP Sandbox</h1>
-<div>
-	<h2>SDK Init</h2>
-	<fieldset>
-		<label>API URI</label>
-		<input type="text" [(ngModel)]="environment.ws_api">
-	</fieldset>
-	<fieldset>
-		<label>API Anon Token</label>
-		<input type="text" [(ngModel)]="environment.anon_token">
-	</fieldset>
-	<button (click)="init()">init()</button>
+<div style="display: flex">
+	<div style="flex: 1">
+		<div *ngIf="showInit">
+			<h2>SDK Init</h2>
+			<fieldset>
+				<label>API URI</label>
+				<input type="text" [(ngModel)]="environment.ws_api">
+			</fieldset>
+			<fieldset>
+				<label>API Anon Token</label>
+				<input type="text" [(ngModel)]="environment.anon_token">
+			</fieldset>
+			<button (click)="init()">init()</button>
+		</div>
+		<button (click)="showInit = !showInit">toggle showInit</button>
+		<hr>
+		<div *ngIf="showAuth">
+			<h2>SDK Auth</h2>
+			<fieldset>
+				<label>Auth Var</label>
+				<select [(ngModel)]="authVars.var">
+					<option *ngFor="let authVar of ['username', 'email', 'phone']" [value]="authVar">{{authVar}}
+					</option>
+				</select>
+			</fieldset>
+			<fieldset>
+				<label>Auth Val</label>
+				<input type="text" [(ngModel)]="authVars.val">
+			</fieldset>
+			<fieldset>
+				<label>Password</label>
+				<input type="text" [(ngModel)]="authVars.password">
+			</fieldset>
+			<button (click)="auth()">auth()</button>
+			<button (click)="checkAuth()">checkAuth()</button>
+			<button (click)="signout()">signout()</button>
+		</div>
+		<button (click)="showAuth = !showAuth">toggle showAuth</button>
+		<hr>
+		<div>
+			<h2>SDK Call</h2>
+			<fieldset>
+				<label>Endpoint</label>
+				<input type="text" [(ngModel)]="callArgs.endpoint">
+			</fieldset>
+			<fieldset>
+				<label>SID</label>
+				<input type="text" [(ngModel)]="callArgs.sid">
+			</fieldset>
+			<fieldset>
+				<label>Token</label>
+				<input type="text" [(ngModel)]="callArgs.token">
+			</fieldset>
+			<fieldset>
+				<label>Query</label>
+				<button (click)="addQueryAttr()">+</button>
+				<fieldset *ngFor="let attr of callArgs.query | values:['__key']">
+					<label>{{attr.__key}}</label><button (click)="delQueryAttr(attr.__key)">-</button><br>
+					<select [(ngModel)]="attr.type">
+						<option *ngFor="let type of ['str', 'int']" [value]="type">{{type}}</option>
+					</select>
+					<input *ngIf="attr.type == 'str'" type="text" placeholder="val" [(ngModel)]="attr.val">
+					<input *ngIf="attr.type == 'int'" type="number" placeholder="val" [(ngModel)]="attr.val">
+					<input *ngIf="attr.oper == '$bet'" type="text" placeholder="val2" [(ngModel)]="attr.val2">
+					<select [(ngModel)]="attr.oper">
+						<option *ngFor="let oper of ['$eq', '$bet', '$ne']" [value]="oper">{{oper}}</option>
+					</select>
+				</fieldset>
+			</fieldset>
+			<fieldset>
+				<label>Doc</label>
+				<button (click)="addDocAttr()">+</button>
+				<fieldset *ngFor="let attr of callArgs.doc | values:['__key']">
+					<label>{{attr.__key}}</label><button (click)="delDocAttr(attr.__key)">-</button><br>
+					<select [(ngModel)]="attr.type" (change)="updateDocAttr(attr.__key, attr.type)">
+						<option *ngFor="let type of ['locale', 'str', 'int', 'file', 'json']" [value]="type">{{type}}
+						</option>
+					</select>
+					<ng-container *ngIf="attr.type == 'locale'">
+						<input type="text" placeholder="val.ar_AE" [(ngModel)]="attr.val.ar_AE">
+						<input type="text" placeholder="val.en_AE" [(ngModel)]="attr.val.en_AE">
+					</ng-container>
+					<input *ngIf="attr.type == 'str'" type="text" placeholder="val" [(ngModel)]="attr.val">
+					<input *ngIf="attr.type == 'int'" type="number" placeholder="val" [(ngModel)]="attr.val">
+					<input *ngIf="attr.type == 'file'" [id]="'file-' + attr.__key" type="file">
+					<textarea *ngIf="attr.type == 'json'" cols="30" rows="10" placeholder="val"
+						[(ngModel)]="attr.val"></textarea>
+				</fieldset>
+			</fieldset>
+			<button (click)="call()">call()</button>
+		</div>
+	</div>
+	<div style="flex: 1; height: 80vh; overflow-x: auto; overflow-y: scroll;">
+		<h2>Output</h2>
+		<pre style="white-space: pre-line; word-break: break-all;">
+	{{output}}
+</pre>
+	</div>
 </div>
-<hr>
-<div>
-	<h2>SDK Auth</h2>
-	<fieldset>
-		<label>Auth Var</label>
-		<select [(ngModel)]="authVars.var">
-			<option *ngFor="let authVar of ['username', 'email', 'phone']" [value]="authVar">{{authVar}}</option>
-		</select>
-	</fieldset>
-	<fieldset>
-		<label>Auth Val</label>
-		<input type="text" [(ngModel)]="authVars.val">
-	</fieldset>
-	<fieldset>
-		<label>Password</label>
-		<input type="text" [(ngModel)]="authVars.password">
-	</fieldset>
-	<button (click)="auth()">auth()</button>
-</div>
-<hr>
-<div>
-	<h2>SDK Call</h2>
-	<fieldset>
-		<label>Endpoint</label>
-		<input type="text" [(ngModel)]="callArgs.endpoint">
-	</fieldset>
-	<fieldset>
-		<label>SID</label>
-		<input type="text" [(ngModel)]="callArgs.sid">
-	</fieldset>
-	<fieldset>
-		<label>Token</label>
-		<input type="text" [(ngModel)]="callArgs.token">
-	</fieldset>
-	<fieldset>
-		<label>Query</label>
-		<button (click)="addQueryAttr()">+</button>
-		<fieldset *ngFor="let attr of callArgs.query | values:['__key']">
-			<label>{{attr.__key}}</label><button (click)="delQueryAttr(attr.__key)">-</button><br>
-			<select [(ngModel)]="attr.type">
-				<option *ngFor="let type of ['str', 'int']" [value]="type">{{type}}</option>
-			</select>
-			<input *ngIf="attr.type == 'str'" type="text" placeholder="val" [(ngModel)]="attr.val">
-			<input *ngIf="attr.type == 'int'" type="number" placeholder="val" [(ngModel)]="attr.val">
-			<input *ngIf="attr.oper == '$bet'" type="text" placeholder="val2" [(ngModel)]="attr.val2">
-			<select [(ngModel)]="attr.oper">
-				<option *ngFor="let oper of ['$eq', '$bet', '$ne']" [value]="oper">{{oper}}</option>
-			</select>
-		</fieldset>
-	</fieldset>
-	<fieldset>
-		<label>Doc</label>
-		<button (click)="addDocAttr()">+</button>
-		<fieldset *ngFor="let attr of callArgs.doc | values:['__key']">
-			<label>{{attr.__key}}</label><button (click)="delDocAttr(attr.__key)">-</button><br>
-			<select [(ngModel)]="attr.type" (change)="updateDocAttr(attr.__key, attr.type)">
-				<option *ngFor="let type of ['locale', 'str', 'int', 'file', 'json']" [value]="type">{{type}}</option>
-			</select>
-			<ng-container *ngIf="attr.type == 'locale'">
-				<input type="text" placeholder="val.ar_AE" [(ngModel)]="attr.val.ar_AE">
-				<input type="text" placeholder="val.en_AE" [(ngModel)]="attr.val.en_AE">
-			</ng-container>
-			<input *ngIf="attr.type == 'str'" type="text" placeholder="val" [(ngModel)]="attr.val">
-			<input *ngIf="attr.type == 'int'" type="number" placeholder="val" [(ngModel)]="attr.val">
-			<input *ngIf="attr.type == 'file'" [id]="'file-' + attr.__key" type="file">
-			<textarea *ngIf="attr.type == 'json'" cols="30" rows="10" placeholder="val" [(ngModel)]="attr.val"></textarea>
-		</fieldset>
-	</fieldset>
-	<button (click)="call()">call()</button>
-</div>
+
 <!-- <ng-container *ngIf="guardOn">
 	<button (click)="auth()">auth()</button>
 	<button (click)="checkAuth()">checkAuth()</button>
@@ -156,8 +174,3 @@
 
 	<button type="submit">submitForm()</button>
 </form> -->
-<hr>
-<h2>Output</h2>
-<pre style="white-space: pre-line;">
-	{{output}}
-</pre>
