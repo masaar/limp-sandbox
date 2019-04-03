@@ -264,7 +264,11 @@ export class AppComponent implements OnInit {
 			if (query[attr].oper == '$eq') {
 				delete query[attr].oper;
 			}
-			delete query[attr].type;
+			if (['$search', '$skip', '$limit'].indexOf(attr) != -1) {
+				query[attr] = query[attr].val;
+			} else {
+				delete query[attr].type;
+			}
 		}
 		for (let attr of Object.keys(doc)) {
 			if (!doc[attr].val) {
@@ -276,6 +280,8 @@ export class AppComponent implements OnInit {
 			}
 			if (doc[attr].type == 'json') {
 				doc[attr].val = JSON.parse(doc[attr].val);
+			} else if (['username_hash', 'email_hash', 'phone_hash'].indexOf(doc[attr].type) != -1) {
+				doc[attr].val = this.api.generateAuthHash(doc[attr].type.replace('_hash', ''), doc[attr].val, doc[attr].password)
 			}
 			doc[attr] = doc[attr].val;
 		}

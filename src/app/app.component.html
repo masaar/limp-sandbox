@@ -74,14 +74,15 @@
 				<fieldset *ngFor="let attr of callArgs.doc | values:['__key']">
 					<label>{{attr.__key}}</label><button (click)="delDocAttr(attr.__key)">-</button><br>
 					<select [(ngModel)]="attr.type" (change)="updateDocAttr(attr.__key, attr.type)">
-						<option *ngFor="let type of ['locale', 'str', 'int', 'file', 'json']" [value]="type">{{type}}
+						<option *ngFor="let type of ['locale', 'str', 'int', 'file', 'json', 'username_hash', 'email_hash', 'phone_hash']" [value]="type">{{type}}
 						</option>
 					</select>
 					<ng-container *ngIf="attr.type == 'locale'">
 						<input type="text" placeholder="val.ar_AE" [(ngModel)]="attr.val.ar_AE">
 						<input type="text" placeholder="val.en_AE" [(ngModel)]="attr.val.en_AE">
 					</ng-container>
-					<input *ngIf="attr.type == 'str'" type="text" placeholder="val" [(ngModel)]="attr.val">
+					<input *ngIf="['str', 'username_hash', 'email_hash', 'phone_hash'].indexOf(attr.type) != -1" type="text" placeholder="val" [(ngModel)]="attr.val">
+					<input *ngIf="['username_hash', 'email_hash', 'phone_hash'].indexOf(attr.type) != -1" type="password" placeholder="password" [(ngModel)]="attr.password">
 					<input *ngIf="attr.type == 'int'" type="number" placeholder="val" [(ngModel)]="attr.val">
 					<input *ngIf="attr.type == 'file'" [id]="'file-' + attr.__key" type="file">
 					<textarea *ngIf="attr.type == 'json'" cols="30" rows="10" placeholder="val"
