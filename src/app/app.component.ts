@@ -89,6 +89,8 @@ export class AppComponent implements OnInit {
 				this.showInit = false;
 			}
 			this.output += JSON.stringify(res) + '\n';
+			
+			document.querySelector('#output-console > button').scrollIntoView();
 		}, (err) => {
 			if (err instanceof CloseEvent) {
 				this.output += JSON.stringify('Connection Closed.') + '\n';
@@ -123,7 +125,7 @@ export class AppComponent implements OnInit {
 	addQueryAttr(): void {
 		let attr = prompt('attr?');
 		if (!attr) return;
-		this.callArgs.query[attr] = { val: '', val2: '', oper: '', type: 'str' }
+		this.callArgs.query[attr] = { val: '', val2: '', oper: '', type: 'str', strict: null }
 	}
 	delQueryAttr(attr: string): void {
 		delete this.callArgs.query[attr];
@@ -153,6 +155,8 @@ export class AppComponent implements OnInit {
 		this.api.checkAuth()
 		.subscribe((res: Res<Doc>) => {
 			this.showAuth = false;
+			this.callArgs.sid = this.api.session._id;
+			this.callArgs.token = this.api.session.token;
 		}, (err: Res<Doc>) => {
 			this.output += JSON.stringify(err) + '\n';
 		});
@@ -263,6 +267,11 @@ export class AppComponent implements OnInit {
 			}
 			if (query[attr].oper == '$eq') {
 				delete query[attr].oper;
+			}
+			if (query[attr].strict == 'false') {
+				query[attr].strict = false;
+			} else {
+				delete query[attr].strict;
 			}
 			if (['$search', '$skip', '$limit'].indexOf(attr) != -1) {
 				query[attr] = query[attr].val;

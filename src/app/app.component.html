@@ -14,7 +14,6 @@
 			<button (click)="init()">init()</button>
 		</div>
 		<button (click)="showInit = !showInit">toggle showInit</button>
-		<hr>
 		<div *ngIf="showAuth">
 			<h2>SDK Auth</h2>
 			<fieldset>
@@ -37,7 +36,6 @@
 			<button (click)="signout()">signout()</button>
 		</div>
 		<button (click)="showAuth = !showAuth">toggle showAuth</button>
-		<hr>
 		<div>
 			<h2>SDK Call</h2>
 			<fieldset>
@@ -66,6 +64,9 @@
 					<select [(ngModel)]="attr.oper">
 						<option *ngFor="let oper of ['$eq', '$bet', '$ne']" [value]="oper">{{oper}}</option>
 					</select>
+					<select [(ngModel)]="attr.strict">
+						<option *ngFor="let strict of [true, false]" [value]="strict">{{strict | json}}</option>
+					</select>
 				</fieldset>
 			</fieldset>
 			<fieldset>
@@ -92,11 +93,12 @@
 			<button (click)="call()">call()</button>
 		</div>
 	</div>
-	<div style="flex: 1; height: 80vh; overflow-x: auto; overflow-y: scroll;">
+	<div id="output-console" style="flex: 1; height: 80vh; overflow-x: auto; overflow-y: scroll;">
 		<h2>Output</h2>
 		<pre style="white-space: pre-line; word-break: break-all;">
-	{{output}}
-</pre>
+			{{ output }}
+		</pre>
+		<button (click)="output = ''">clear output</button>
 	</div>
 </div>
 
