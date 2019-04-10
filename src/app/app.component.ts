@@ -122,18 +122,34 @@ export class AppComponent implements OnInit {
 		})
 	}
 
-	addQueryAttr(): void {
-		let attr = prompt('attr?');
+	addQueryAttr(attr?: string): void {
+		if (!attr) {
+			attr = prompt('attr [,attr,attr...] ?');
+		}
 		if (!attr) return;
+		if (attr.indexOf(',') != -1) {
+			for (let attr_item of attr.split(',')) {
+				this.addQueryAttr(attr_item.trim());
+			}
+			return;
+		}
 		this.callArgs.query[attr] = { val: '', val2: '', oper: '', type: 'str', strict: null }
 	}
 	delQueryAttr(attr: string): void {
 		delete this.callArgs.query[attr];
 	}
 
-	addDocAttr(): void {
-		let attr = prompt('attr?');
+	addDocAttr(attr?: string): void {
+		if (!attr) {
+			attr = prompt('attr [,attr,attr...] ?');
+		}
 		if (!attr) return;
+		if (attr.indexOf(',') != -1) {
+			for (let attr_item of attr.split(',')) {
+				this.addDocAttr(attr_item.trim());
+			}
+			return;
+		}
 		this.callArgs.doc[attr] = { val: '', type: 'str' }
 	}
 	updateDocAttr(attr: string, type: string): void {
@@ -273,7 +289,11 @@ export class AppComponent implements OnInit {
 			} else {
 				delete query[attr].strict;
 			}
-			if (['$search', '$skip', '$limit'].indexOf(attr) != -1) {
+			if (['username_hash', 'email_hash', 'phone_hash'].indexOf(query[attr].type) != -1) {
+				query[attr].val = this.api.generateAuthHash(query[attr].type.replace('_hash', ''), query[attr].val, query[attr].password)
+				delete query[attr].password;
+			}
+			if (['$search', '$skip', '$limit', '$extn'].indexOf(attr) != -1) {
 				query[attr] = query[attr].val;
 			} else {
 				delete query[attr].type;
