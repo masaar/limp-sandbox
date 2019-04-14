@@ -1,8 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { of, throwError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
+
+import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 
 import { ApiService, Res, Doc } from 'ng-limp';
 
@@ -17,6 +19,9 @@ import { environment } from 'src/environments/environment';
 export class AppComponent implements OnInit {
 
 	environment: any = environment;
+
+	editorOptions: JsonEditorOptions;
+	data: any;
 
 	authVars: any = {
 		var: 'email',
@@ -63,9 +68,16 @@ export class AppComponent implements OnInit {
 		doc: {}
 	};
 
-	output: string = '';
+	output: Array<{type: 'text' | 'json'; value: any;}> = [];
 
-	constructor(private api: ApiService, private formBuilder: FormBuilder) { }
+	constructor(private api: ApiService, private formBuilder: FormBuilder) {
+		this.editorOptions = new JsonEditorOptions()
+    this.editorOptions.modes = ['code', 'view']; // set all allowed modes
+	this.editorOptions.mode = 'view'; //set only one mode
+	this.editorOptions.statusBar = false;
+      
+      this.data = {"products":[{"name":"car","product":[{"name":"honda","model":[{"id":"civic","name":"civic"},{"id":"accord","name":"accord"},{"id":"crv","name":"crv"},{"id":"pilot","name":"pilot"},{"id":"odyssey","name":"odyssey"}]}]}]}
+	}
 
 	ngOnInit(): void {
 		this.api.debug = true;
@@ -76,9 +88,9 @@ export class AppComponent implements OnInit {
 		.pipe(
 			catchError((err) => {
 				if (err instanceof CloseEvent) {
-					this.output += JSON.stringify('Connection Closed.') + '\n';
+					this.output.push({type:'text', value:'Connection Closed.'});
 				} else {
-					this.output += JSON.stringify(err) + '\n';
+					this.output.push({type:'json', value:err});
 				}
 				return throwError(err);
 			}),
@@ -88,14 +100,14 @@ export class AppComponent implements OnInit {
 			if (res.args.code == 'CORE_CONN_OK') {
 				this.showInit = false;
 			}
-			this.output += JSON.stringify(res) + '\n';
+			this.output.push({type:'json', value:res});
 			
 			document.querySelector('#output-console > button').scrollIntoView();
 		}, (err) => {
 			if (err instanceof CloseEvent) {
-				this.output += JSON.stringify('Connection Closed.') + '\n';
+				this.output.push({type:'text', value:'Connection Closed.'});
 			} else {
-				this.output += JSON.stringify(err) + '\n';
+				this.output.push({type:'json', value:err});
 			}
 		}, () => {
 			console.log('complete');
@@ -174,7 +186,7 @@ export class AppComponent implements OnInit {
 			this.callArgs.sid = this.api.session._id;
 			this.callArgs.token = this.api.session.token;
 		}, (err: Res<Doc>) => {
-			this.output += JSON.stringify(err) + '\n';
+			this.output.push({type:'json', value:err});
 		});
 	}
 
@@ -328,7 +340,7 @@ export class AppComponent implements OnInit {
 	}
 
 	logCall(call: string): void {
-		this.output += `===\nPushing call:\n${call}\n===\n`;
+		this.output.push({type:'text', value: `===\nPushing call:\n${call}\n===\n`});
 	}
 
 }

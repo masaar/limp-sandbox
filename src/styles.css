@@ -7,6 +7,13 @@
 	box-sizing: border-box;
 }
 
+.jsoneditor-schema-error, div.jsoneditor td, div.jsoneditor textarea, div.jsoneditor th, div.jsoneditor-field, div.jsoneditor-value {
+	color: #fff !important;
+}
+div.jsoneditor-field[contenteditable=true]:hover {
+	color: #000;
+}
+
 body {
 	font-family: 'Open Sans', sans-serif;
 	line-height: 1.75em;

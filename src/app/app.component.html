@@ -96,10 +96,13 @@
 	</div>
 	<div id="output-console" style="flex: 1; height: 80vh; overflow-x: auto; overflow-y: scroll;">
 		<h2>Output</h2>
-		<pre style="white-space: pre-line; word-break: break-all;">
-			{{ output }}
-		</pre>
-		<button (click)="output = ''">clear output</button>
+		<ng-container *ngFor="let item of output">
+			<pre *ngIf="item.type == 'text'" style="white-space: pre-line; word-break: break-all;">
+				{{ item.value }}
+			</pre>
+			<json-editor *ngIf="item.type == 'json'" [options]="editorOptions" [data]="item.value"></json-editor>
+		</ng-container>
+		<button (click)="output = []">clear output</button>
 	</div>
 </div>
 
