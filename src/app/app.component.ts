@@ -304,8 +304,10 @@ export class AppComponent implements OnInit {
 			if (['username_hash', 'email_hash', 'phone_hash'].indexOf(query[attr].type) != -1) {
 				query[attr].val = this.api.generateAuthHash(query[attr].type.replace('_hash', ''), query[attr].val, query[attr].password)
 				delete query[attr].password;
+			} else if (query[attr].type == 'json') {
+				query[attr].val = JSON.parse(query[attr].val);
 			}
-			if (['$search', '$skip', '$limit', '$extn'].indexOf(attr) != -1) {
+			if (['$search', '$skip', '$limit', '$extn', '$attrs'].indexOf(attr) != -1) {
 				query[attr] = query[attr].val;
 			} else {
 				delete query[attr].type;

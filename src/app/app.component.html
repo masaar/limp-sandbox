@@ -56,11 +56,13 @@
 				<fieldset *ngFor="let attr of callArgs.query | values:['__key']">
 					<label>{{attr.__key}}</label><button (click)="delQueryAttr(attr.__key)">-</button><br>
 					<select [(ngModel)]="attr.type">
-						<option *ngFor="let type of ['str', 'int', 'username_hash', 'email_hash', 'phone_hash']" [value]="type">{{type}}</option>
+						<option *ngFor="let type of ['str', 'int', 'json', 'username_hash', 'email_hash', 'phone_hash']" [value]="type">{{type}}</option>
 					</select>
 					<input *ngIf="['str', 'username_hash', 'email_hash', 'phone_hash'].indexOf(attr.type) != -1" type="text" placeholder="val" [(ngModel)]="attr.val">
 					<input *ngIf="['username_hash', 'email_hash', 'phone_hash'].indexOf(attr.type) != -1" type="password" placeholder="password" [(ngModel)]="attr.password">
 					<input *ngIf="attr.type == 'int'" type="number" placeholder="val" [(ngModel)]="attr.val">
+					<textarea *ngIf="attr.type == 'json'" cols="30" rows="10" placeholder="val"
+						[(ngModel)]="attr.val"></textarea>
 					<input *ngIf="attr.oper == '$bet'" type="text" placeholder="val2" [(ngModel)]="attr.val2">
 					<select [(ngModel)]="attr.oper">
 						<option *ngFor="let oper of ['$eq', '$bet', '$ne']" [value]="oper">{{oper}}</option>
