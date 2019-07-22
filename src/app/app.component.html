@@ -52,7 +52,8 @@
 			</fieldset>
 			<fieldset>
 				<label>Query</label>
-				<button (click)="addQueryAttr()">+</button>
+				<json-editor [options]="editorOptionsCode" [(ngModel)]="callArgs.query"></json-editor>
+				<!-- <button (click)="addQueryAttr()">+</button>
 				<fieldset *ngFor="let attr of callArgs.query | values:['__key']">
 					<label>{{attr.__key}}</label><button (click)="delQueryAttr(attr.__key)">-</button><br>
 					<select [(ngModel)]="attr.type">
@@ -70,11 +71,12 @@
 					<select [(ngModel)]="attr.strict">
 						<option *ngFor="let strict of [true, false]" [value]="strict">{{strict | json}}</option>
 					</select>
-				</fieldset>
+				</fieldset> -->
 			</fieldset>
 			<fieldset>
 				<label>Doc</label>
-				<button (click)="addDocAttr()">+</button>
+				<json-editor [options]="editorOptionsCode" [(ngModel)]="callArgs.doc"></json-editor>
+				<!-- <button (click)="addDocAttr()">+</button>
 				<fieldset *ngFor="let attr of callArgs.doc | values:['__key']">
 					<label>{{attr.__key}}</label><button (click)="delDocAttr(attr.__key)">-</button><br>
 					<select [(ngModel)]="attr.type" (change)="updateDocAttr(attr.__key, attr.type)">
@@ -91,7 +93,7 @@
 					<input *ngIf="attr.type == 'file'" [id]="'file-' + attr.__key" type="file">
 					<textarea *ngIf="attr.type == 'json'" cols="30" rows="10" placeholder="val"
 						[(ngModel)]="attr.val"></textarea>
-				</fieldset>
+				</fieldset> -->
 			</fieldset>
 			<button (click)="call()">call()</button>
 		</div>
@@ -102,7 +104,7 @@
 			<pre *ngIf="item.type == 'text'" style="white-space: pre-line; word-break: break-all;">
 				{{ item.value }}
 			</pre>
-			<json-editor *ngIf="item.type == 'json'" [options]="editorOptions" [data]="item.value"></json-editor>
+			<json-editor *ngIf="item.type == 'json'" [options]="editorOptionsView" [data]="item.value"></json-editor>
 		</ng-container>
 		<button (click)="output = []">clear output</button>
 	</div>
