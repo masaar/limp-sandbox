@@ -9,7 +9,7 @@
 			</fieldset>
 			<fieldset>
 				<label>API Anon Token</label>
-				<input type="text" [(ngModel)]="environment.anon_token">
+				<input type="text" [(ngModel)]="environment.anon_token" (change)="updateAnonToken()">
 			</fieldset>
 			<button (click)="init()">init()</button>
 		</div>

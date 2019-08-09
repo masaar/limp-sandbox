@@ -61,6 +61,10 @@ export class AppComponent implements OnInit {
 		this.api.debug = true;
 	}
 
+	updateAnonToken(): void {
+		this.callArgs.token = environment.anon_token;
+	}
+
 	init(): void {
 		this.api.init(environment.ws_api, environment.anon_token)
 			.pipe(
