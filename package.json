@@ -26,7 +26,7 @@
     "file-saver": "^2.0.2",
     "jsoneditor": "^5.32.5",
     "jsrsasign": "^8.0.12",
-    "ng-limp": "^5.0.2",
+    "ng-limp": "^5.0.3",
     "ngx-cookie": "^4.1.2",
     "rxjs": "^6.5.2",
     "tslib": "^1.9.0",

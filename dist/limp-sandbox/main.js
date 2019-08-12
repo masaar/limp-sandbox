@@ -41,7 +41,7 @@ module.exports = "fieldset {\r\n\tborder: none;\r\n}\r\n/*# sourceMappingURL=dat
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h1>LIMP Sandbox</h1>\r\n<div style=\"display: flex\">\r\n\t<div style=\"flex: 1\">\r\n\t\t<div *ngIf=\"showInit\">\r\n\t\t\t<h2>SDK Init</h2>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>API URI</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"environment.ws_api\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>API Anon Token</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"environment.anon_token\" (change)=\"updateAnonToken()\">\r\n\t\t\t</fieldset>\r\n\t\t\t<button (click)=\"init()\">init()</button>\r\n\t\t</div>\r\n\t\t<button (click)=\"showInit = !showInit\">toggle showInit</button>\r\n\t\t<div *ngIf=\"showAuth\">\r\n\t\t\t<h2>SDK Auth</h2>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Auth Var</label>\r\n\t\t\t\t<select [(ngModel)]=\"authVars.var\">\r\n\t\t\t\t\t<option *ngFor=\"let authVar of ['username', 'email', 'phone']\" [value]=\"authVar\">{{authVar}}\r\n\t\t\t\t\t</option>\r\n\t\t\t\t</select>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Auth Val</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"authVars.val\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Password</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"authVars.password\">\r\n\t\t\t</fieldset>\r\n\t\t\t<button (click)=\"auth()\">auth()</button>\r\n\t\t\t<button (click)=\"checkAuth()\">checkAuth()</button>\r\n\t\t\t<button (click)=\"signout()\">signout()</button>\r\n\t\t</div>\r\n\t\t<button (click)=\"showAuth = !showAuth\">toggle showAuth</button>\r\n\t\t<div>\r\n\t\t\t<h2>SDK Call</h2>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Endpoint</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"callArgs.endpoint\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>SID</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"callArgs.sid\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Token</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"callArgs.token\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Query</label>\r\n\t\t\t\t<json-editor [options]=\"editorOptionsCode\" [(ngModel)]=\"callArgs.query\"></json-editor>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Doc</label>\r\n\t\t\t\t<json-editor [options]=\"editorOptionsCode\" [(ngModel)]=\"callArgs.doc\"></json-editor>\r\n\t\t\t</fieldset>\r\n\t\t\t<button (click)=\"call()\">call()</button>\r\n\t\t</div>\r\n\t</div>\r\n\t<div id=\"output-console\" style=\"flex: 1; height: 80vh; overflow-x: auto; overflow-y: scroll;\">\r\n\t\t<h2>Output</h2>\r\n\t\t<ng-container *ngFor=\"let item of output\">\r\n\t\t\t<pre *ngIf=\"item.type == 'text'\" style=\"white-space: pre-line; word-break: break-all;\">\r\n\t\t\t\t{{ item.value }}\r\n\t\t\t</pre>\r\n\t\t\t<json-editor *ngIf=\"item.type == 'json'\" [options]=\"editorOptionsView\" [data]=\"item.value\"></json-editor>\r\n\t\t</ng-container>\r\n\t\t<button (click)=\"output = []\">clear output</button>\r\n\t</div>\r\n</div>"
+module.exports = "<h1>LIMP Sandbox</h1>\r\n<div style=\"display: flex\">\r\n\t<div style=\"flex: 1\">\r\n\t\t<div *ngIf=\"showInit\">\r\n\t\t\t<h2>SDK Init</h2>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>API URI</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"environment.ws_api\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>API Anon Token</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"environment.anon_token\" (change)=\"updateAnonToken()\">\r\n\t\t\t</fieldset>\r\n\t\t\t<button (click)=\"init()\">init()</button>\r\n\t\t</div>\r\n\t\t<button (click)=\"showInit = !showInit\">toggle showInit</button>\r\n\t\t<div *ngIf=\"showAuth\">\r\n\t\t\t<h2>SDK Auth</h2>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Auth Var</label>\r\n\t\t\t\t<select [(ngModel)]=\"authVars.var\">\r\n\t\t\t\t\t<option *ngFor=\"let authVar of ['username', 'email', 'phone']\" [value]=\"authVar\">{{authVar}}\r\n\t\t\t\t\t</option>\r\n\t\t\t\t</select>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Auth Val</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"authVars.val\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Password</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"authVars.password\">\r\n\t\t\t</fieldset>\r\n\t\t\t<button (click)=\"auth()\">auth()</button>\r\n\t\t\t<button (click)=\"checkAuth()\">checkAuth()</button>\r\n\t\t\t<button (click)=\"signout()\">signout()</button>\r\n\t\t</div>\r\n\t\t<button (click)=\"showAuth = !showAuth\">toggle showAuth</button>\r\n\t\t<div>\r\n\t\t\t<h2>SDK Call</h2>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Endpoint</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"callArgs.endpoint\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>SID</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"callArgs.sid\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Token</label>\r\n\t\t\t\t<input type=\"text\" [(ngModel)]=\"callArgs.token\">\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Query</label>\r\n\t\t\t\t<json-editor [options]=\"editorOptionsQuery\" [(ngModel)]=\"callArgs.query\"></json-editor>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<label>Doc</label>\r\n\t\t\t\t<json-editor [options]=\"editorOptionsDoc\" [(ngModel)]=\"callArgs.doc\"></json-editor>\r\n\t\t\t</fieldset>\r\n\t\t\t<button (click)=\"call()\">call()</button>\r\n\t\t</div>\r\n\t</div>\r\n\t<div id=\"output-console\" style=\"flex: 1; height: 80vh; overflow-x: auto; overflow-y: scroll;\">\r\n\t\t<h2>Output</h2>\r\n\t\t<ng-container *ngFor=\"let item of output\">\r\n\t\t\t<pre *ngIf=\"item.type == 'text'\" style=\"white-space: pre-line; word-break: break-all;\">\r\n\t\t\t\t{{ item.value }}\r\n\t\t\t</pre>\r\n\t\t\t<json-editor *ngIf=\"item.type == 'json'\" [options]=\"editorOptionsView\" [data]=\"item.value\"></json-editor>\r\n\t\t</ng-container>\r\n\t\t<button (click)=\"output = []\">clear output</button>\r\n\t</div>\r\n</div>"
 
 /***/ }),
 
@@ -85,6 +85,7 @@ var AppComponent = /** @class */ (function () {
         this.showInit = true;
         this.showAuth = true;
         this.guardOn = true;
+        this.doc = { 1: 2 };
         this.callArgs = {
             sid: 'f00000000000000000000012',
             token: src_environments_environment__WEBPACK_IMPORTED_MODULE_7__["environment"].anon_token,
@@ -94,13 +95,17 @@ var AppComponent = /** @class */ (function () {
         };
         this.output = [];
         this.editorOptionsView = new ang_jsoneditor__WEBPACK_IMPORTED_MODULE_5__["JsonEditorOptions"]();
-        this.editorOptionsView.modes = ['code', 'view']; // set all allowed modes
-        this.editorOptionsView.mode = 'view'; //set only one mode
+        this.editorOptionsView.modes = ['code', 'view'];
+        this.editorOptionsView.mode = 'view';
         this.editorOptionsView.statusBar = false;
-        this.editorOptionsCode = new ang_jsoneditor__WEBPACK_IMPORTED_MODULE_5__["JsonEditorOptions"]();
-        this.editorOptionsCode.modes = ['code', 'view'];
-        this.editorOptionsCode.mode = 'code';
-        this.editorOptionsCode.statusBar = false;
+        this.editorOptionsQuery = new ang_jsoneditor__WEBPACK_IMPORTED_MODULE_5__["JsonEditorOptions"]();
+        this.editorOptionsQuery.modes = ['code', 'view'];
+        this.editorOptionsQuery.mode = 'code';
+        this.editorOptionsQuery.statusBar = false;
+        this.editorOptionsDoc = new ang_jsoneditor__WEBPACK_IMPORTED_MODULE_5__["JsonEditorOptions"]();
+        this.editorOptionsDoc.modes = ['code', 'view'];
+        this.editorOptionsDoc.mode = 'code';
+        this.editorOptionsDoc.statusBar = false;
     }
     AppComponent.prototype.ngOnInit = function () {
         this.api.debug = true;

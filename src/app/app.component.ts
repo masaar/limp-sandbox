@@ -6,7 +6,7 @@ import { retry, catchError } from 'rxjs/operators';
 
 import { JsonEditorOptions } from 'ang-jsoneditor';
 
-import { ApiService, Res, Doc, callArgs } from 'ng-limp';
+import { ApiService, Res, Doc, Query } from 'ng-limp';
 
 import { environment } from 'src/environments/environment';
 
@@ -21,7 +21,8 @@ export class AppComponent implements OnInit {
 	environment: any = environment;
 
 	editorOptionsView: JsonEditorOptions;
-	editorOptionsCode: JsonEditorOptions;
+	editorOptionsQuery: JsonEditorOptions;
+	editorOptionsDoc: JsonEditorOptions;
 	data: any;
 
 	authVars: any = {
@@ -36,7 +37,14 @@ export class AppComponent implements OnInit {
 
 	guardOn: boolean = true;
 
-	callArgs: callArgs = {
+	doc: any = {1:2};
+	callArgs: {
+		sid: string;
+		token: string;
+		endpoint: string;
+		query: Query;
+		doc: any;
+	} = {
 		sid: 'f00000000000000000000012',
 		token: environment.anon_token,
 		endpoint: '',
@@ -48,13 +56,17 @@ export class AppComponent implements OnInit {
 
 	constructor(private api: ApiService, private formBuilder: FormBuilder) {
 		this.editorOptionsView = new JsonEditorOptions()
-		this.editorOptionsView.modes = ['code', 'view']; // set all allowed modes
-		this.editorOptionsView.mode = 'view'; //set only one mode
+		this.editorOptionsView.modes = ['code', 'view'];
+		this.editorOptionsView.mode = 'view';
 		this.editorOptionsView.statusBar = false;
-		this.editorOptionsCode = new JsonEditorOptions()
-		this.editorOptionsCode.modes = ['code', 'view'];
-		this.editorOptionsCode.mode = 'code';
-		this.editorOptionsCode.statusBar = false;
+		this.editorOptionsQuery = new JsonEditorOptions()
+		this.editorOptionsQuery.modes = ['code', 'view'];
+		this.editorOptionsQuery.mode = 'code';
+		this.editorOptionsQuery.statusBar = false;
+		this.editorOptionsDoc = new JsonEditorOptions()
+		this.editorOptionsDoc.modes = ['code', 'view'];
+		this.editorOptionsDoc.mode = 'code';
+		this.editorOptionsDoc.statusBar = false;
 	}
 
 	ngOnInit(): void {

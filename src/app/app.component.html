@@ -52,11 +52,11 @@
 			</fieldset>
 			<fieldset>
 				<label>Query</label>
-				<json-editor [options]="editorOptionsCode" [(ngModel)]="callArgs.query"></json-editor>
+				<json-editor [options]="editorOptionsQuery" [(ngModel)]="callArgs.query"></json-editor>
 			</fieldset>
 			<fieldset>
 				<label>Doc</label>
-				<json-editor [options]="editorOptionsCode" [(ngModel)]="callArgs.doc"></json-editor>
+				<json-editor [options]="editorOptionsDoc" [(ngModel)]="callArgs.doc"></json-editor>
 			</fieldset>
 			<button (click)="call()">call()</button>
 		</div>
