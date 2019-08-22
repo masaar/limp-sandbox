@@ -6,7 +6,7 @@ import { retry, catchError } from 'rxjs/operators';
 
 import { JsonEditorOptions } from 'ang-jsoneditor';
 
-import { ApiService, Res, Doc, Query } from 'ng-limp';
+import { ApiService, Res, Doc, Query, Session } from 'ng-limp';
 
 import { environment } from 'src/environments/environment';
 
@@ -78,6 +78,7 @@ export class AppComponent implements OnInit {
 	}
 
 	init(): void {
+		this.showAuth = true;
 		this.api.init(environment.ws_api, environment.anon_token)
 			.pipe(
 				catchError((err) => {
@@ -106,12 +107,16 @@ export class AppComponent implements OnInit {
 			}, () => {
 				console.log('complete');
 			});
-		this.api.authed$.subscribe((session: any) => {
+		this.api.authed$.subscribe((session: Session) => {
 			if (session) {
-				this.guardOn = false;
+				this.showAuth = this.guardOn = false;
 				this.authVars.auth = session;
+				this.callArgs.sid = session._id;
+				this.callArgs.token = session.token;
 			} else {
-				this.guardOn = true;
+				this.showAuth = this.guardOn = true;
+				this.callArgs.sid = 'f00000000000000000000012';
+				this.callArgs.token = environment.anon_token;
 			}
 		});
 	}
@@ -119,12 +124,9 @@ export class AppComponent implements OnInit {
 	auth(): void {
 		this.logCall(`api.auth(${this.authVars.var}, ${this.authVars.val}, ${this.authVars.password})`);
 		this.api.auth(this.authVars.var, this.authVars.val, this.authVars.password).subscribe((res: Res<Doc>) => {
-			this.showAuth = false;
-			// this.authVars.auth = res.args.docs[0]
-			this.callArgs.sid = res.args.docs[0]._id;
-			this.callArgs.token = res.args.docs[0].token;
-		}, (err) => {
 
+		}, (err) => {
+			this.output.push({ type: 'json', value: err });
 		})
 	}
 
@@ -132,9 +134,7 @@ export class AppComponent implements OnInit {
 		this.logCall('api.checkAuth()');
 		this.api.checkAuth()
 			.subscribe((res: Res<Doc>) => {
-				this.showAuth = false;
-				this.callArgs.sid = this.api.session._id;
-				this.callArgs.token = this.api.session.token;
+
 			}, (err: Res<Doc>) => {
 				this.output.push({ type: 'json', value: err });
 			});
