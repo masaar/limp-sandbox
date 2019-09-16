@@ -89,7 +89,7 @@ export class AppComponent implements OnInit {
 					}
 					return throwError(err);
 				}),
-				retry(10)
+				// retry(10)
 			)
 			.subscribe((res: Res<Doc>) => {
 				if (res.args.code == 'CORE_CONN_OK') {

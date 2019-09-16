@@ -22,7 +22,7 @@ import { KeysPipe, ValuesPipe } from './object.pipe';
 	FormsModule,
 	ReactiveFormsModule,
 	NgJsonEditorModule,
-	NgLimpModule.forRoot()
+	NgLimpModule
   ],
   providers: [],
   bootstrap: [AppComponent]
