@@ -6,7 +6,7 @@ import { retry, catchError } from 'rxjs/operators';
 
 import { JsonEditorOptions } from 'ang-jsoneditor';
 
-import { ApiService, Res, Doc, Query, Session } from 'ng-limp';
+import { ApiService, Res, Doc, Query, Session, SDKConfig } from 'ng-limp';
 
 import { environment } from 'src/environments/environment';
 
@@ -24,6 +24,13 @@ export class AppComponent implements OnInit {
 	editorOptionsQuery: JsonEditorOptions;
 	editorOptionsDoc: JsonEditorOptions;
 	data: any;
+
+	SDKConfig: SDKConfig = {
+		api: environment.ws_api,
+		anonToken: environment.anon_token,
+		authAttrs: [],
+		debug: true
+	}
 
 	authVars: any = {
 		var: 'email',
@@ -52,6 +59,8 @@ export class AppComponent implements OnInit {
 		doc: {}
 	};
 
+	docFiles: Array<FileList> = [];
+
 	output: Array<{ type: 'text' | 'json'; value: any; }> = [];
 
 	constructor(private api: ApiService, private formBuilder: FormBuilder) {
@@ -69,17 +78,23 @@ export class AppComponent implements OnInit {
 		this.editorOptionsDoc.statusBar = false;
 	}
 
-	ngOnInit(): void {
-		this.api.debug = true;
-	}
+	ngOnInit() { }
 
 	updateAnonToken(): void {
 		this.callArgs.token = environment.anon_token;
 	}
 
+	updateAuthAttrs($event: Event): void {
+		this.SDKConfig.authAttrs = ($event.target as any).value.split(' ');
+	}
+
+	updateDocFiles(): void {
+		this.docFiles = (JSON.stringify(this.callArgs.doc).match(/__file__/g) as any).fill(undefined);
+	}
+
 	init(): void {
 		this.showAuth = true;
-		this.api.init(environment.ws_api, environment.anon_token)
+		this.api.init(this.SDKConfig)
 			.pipe(
 				catchError((err) => {
 					if (err instanceof CloseEvent) {
@@ -145,9 +160,38 @@ export class AppComponent implements OnInit {
 		this.api.signout().subscribe();
 	}
 
+	updateFiles(obj: any, i: number = 0): void {
+		if (!this.docFiles.length || i == this.docFiles.length) {
+			return;
+		}
+		for (let attr of Object.keys(obj)) {
+			if (obj[attr] instanceof Array) {
+				this.updateFiles(obj[attr], i);
+			} else if (obj[attr] instanceof Object) {
+				this.updateFiles(obj[attr], i);
+			} else {
+				if (obj[attr] == '__file__') {
+					this.output.push({ type: 'text', value: `Replacing __file__ attr in doc with file#${i}` });
+					obj[attr] = this.docFiles[i];
+					if (!obj[attr]) {
+						this.output.push({ type: 'text', value: `File#${i} is null value. Stopping.` });
+						throw Error('No file value');
+					}
+					i += 1;
+					if (i == this.docFiles.length) return;
+				}
+			}
+		}
+	}
+
 	call(): void {
 		let query: any = JSON.parse(JSON.stringify(this.callArgs.query));
 		let doc: any = JSON.parse(JSON.stringify(this.callArgs.doc));
+
+		console.log('before files:', doc);
+		this.updateFiles(doc);
+		console.log('after files:', doc);
+
 		this.logCall(`api.call(${this.callArgs.endpoint}, {query:${JSON.stringify(query)}, doc:${JSON.stringify(doc)}})`);
 		this.api.call(this.callArgs.endpoint, {
 			sid: this.callArgs.sid,

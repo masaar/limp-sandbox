@@ -11,6 +11,11 @@
 				<label>API Anon Token</label>
 				<input type="text" [(ngModel)]="environment.anon_token" (change)="updateAnonToken()">
 			</fieldset>
+			<fieldset>
+				<label>API Auth Attrs</label>
+				<input type="text" (change)="updateAuthAttrs($event)">
+				<small><br>Separate attrs with single spaces only</small>
+			</fieldset>
 			<button (click)="init()">init()</button>
 		</div>
 		<button (click)="showInit = !showInit">toggle showInit</button>
@@ -19,7 +24,7 @@
 			<fieldset>
 				<label>Auth Var</label>
 				<select [(ngModel)]="authVars.var">
-					<option *ngFor="let authVar of ['username', 'email', 'phone']" [value]="authVar">{{authVar}}
+					<option *ngFor="let authVar of SDKConfig.authAttrs" [value]="authVar">{{authVar}}
 					</option>
 				</select>
 			</fieldset>
@@ -56,7 +61,12 @@
 			</fieldset>
 			<fieldset>
 				<label>Doc</label>
-				<json-editor [options]="editorOptionsDoc" [(ngModel)]="callArgs.doc"></json-editor>
+				<json-editor [options]="editorOptionsDoc" [(ngModel)]="callArgs.doc" (change)="updateDocFiles()"></json-editor>
+				<small><br>Use __file__ as string value for any doc attr to create bound file input</small>
+			</fieldset>
+			<fieldset *ngFor="let file of docFiles; let i = index">
+				<label>File: {{ i }}</label>
+				<input type="file" (change)="docFiles[i] = $event.target.files">
 			</fieldset>
 			<button (click)="call()">call()</button>
 		</div>
