@@ -5,11 +5,11 @@
 			<h2>SDK Init</h2>
 			<fieldset>
 				<label>API URI</label>
-				<input type="text" [(ngModel)]="environment.ws_api">
+				<input type="text" [(ngModel)]="SDKConfig.api">
 			</fieldset>
 			<fieldset>
 				<label>API Anon Token</label>
-				<input type="text" [(ngModel)]="environment.anon_token" (change)="updateAnonToken()">
+				<input type="text" [(ngModel)]="SDKConfig.anonToken" (change)="updateAnonToken()">
 			</fieldset>
 			<fieldset>
 				<label>API Auth Attrs</label>
