@@ -16,6 +16,13 @@
 				<input type="text" (change)="updateAuthAttrs($event)">
 				<small><br>Separate attrs with single spaces only</small>
 			</fieldset>
+			<fieldset>
+				<label>API Auth Hash Level</label>
+				<select [(ngModel)]="SDKConfig.authHashLevel">
+					<option [ngValue]="5.6">5.6</option>
+					<option [ngValue]="5.0">5.0</option>
+				</select>
+			</fieldset>
 			<button (click)="init()">init()</button>
 		</div>
 		<button (click)="showInit = !showInit">toggle showInit</button>

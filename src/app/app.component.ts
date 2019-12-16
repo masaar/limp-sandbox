@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
 		api: environment.ws_api,
 		anonToken: environment.anon_token,
 		authAttrs: [],
+		authHashLevel: 5.6,
 		debug: true
 	}
 
