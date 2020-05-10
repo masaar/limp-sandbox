@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
 import { throwError } from 'rxjs';
-import { retry, catchError } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 import { JsonEditorOptions } from 'ang-jsoneditor';
 
@@ -29,7 +29,8 @@ export class AppComponent implements OnInit {
 		api: environment.ws_api,
 		anonToken: environment.anon_token,
 		authAttrs: [],
-		authHashLevel: 5.6,
+		appId: 'LIMP_SANDBOX',
+		authHashLevel: '6.1',
 		debug: true
 	}
 
@@ -194,7 +195,8 @@ export class AppComponent implements OnInit {
 		console.log('after files:', doc);
 
 		this.logCall(`api.call(${this.callArgs.endpoint}, {query:${JSON.stringify(query)}, doc:${JSON.stringify(doc)}})`);
-		this.api.call(this.callArgs.endpoint, {
+		this.api.call({
+			endpoint: this.callArgs.endpoint,
 			sid: this.callArgs.sid,
 			token: this.callArgs.token,
 			query: query,

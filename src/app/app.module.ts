@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -17,7 +16,6 @@ import { KeysPipe, ValuesPipe } from './object.pipe';
 	ValuesPipe
   ],
   imports: [
-	HttpModule,
 	BrowserModule,
 	FormsModule,
 	ReactiveFormsModule,

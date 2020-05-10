@@ -19,6 +19,7 @@
 			<fieldset>
 				<label>API Auth Hash Level</label>
 				<select [(ngModel)]="SDKConfig.authHashLevel">
+					<option [ngValue]="6.1">6.1</option>
 					<option [ngValue]="5.6">5.6</option>
 					<option [ngValue]="5.0">5.0</option>
 				</select>
@@ -78,7 +79,7 @@
 			<button (click)="call()">call()</button>
 		</div>
 	</div>
-	<div id="output-console" style="flex: 1; height: 80vh; overflow-x: auto; overflow-y: scroll;">
+	<div id="output-console" style="flex: 1; height: calc(100vh - 54); overflow-x: auto; overflow-y: scroll;">
 		<h2>Output</h2>
 		<ng-container *ngFor="let item of output">
 			<pre *ngIf="item.type == 'text'" style="white-space: pre-line; word-break: break-all;">
