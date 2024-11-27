@@ -24,7 +24,7 @@
     "crypto-js": "^4.0.0",
     "file-saver": "^2.0.2",
     "jsoneditor": "^8.6.3",
-    "jsrsasign": "^8.0.15",
+    "jsrsasign": "^8.0.19",
     "ng-limp": "^6.1.0-rc1",
     "rxjs": "^6.5.4",
     "tslib": "^1.10.0",
